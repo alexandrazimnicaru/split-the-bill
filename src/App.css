@@ -1,0 +1,14 @@
+.header {
+  height: 60px;
+  padding: 0 20px;
+  background: green;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.main {
+  padding: 20px;
+}

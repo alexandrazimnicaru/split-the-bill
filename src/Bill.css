@@ -1,0 +1,8 @@
+.bill__items {
+  list-style-type: none;
+}
+
+.bill__item__amount,
+.bill__remove-btn {
+  float: right;
+}

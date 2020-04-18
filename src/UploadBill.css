@@ -1,0 +1,23 @@
+
+.upload__label {
+  display: block;
+  padding-bottom: 10px;
+}
+
+.upload__img {
+  position: relative;
+  width: 400px;
+}
+
+.upload__remove-btn {
+  position: absolute;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+  top: -10px;
+  right: -10px;
+  background: orangered;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+}

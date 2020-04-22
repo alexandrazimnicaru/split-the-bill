@@ -3,6 +3,7 @@
 }
 
 .bill__item__amount,
-.bill__remove-btn {
+.bill__remove-btn,
+.bill__confirm-btn {
   float: right;
 }

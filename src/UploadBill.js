@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import Tesseract from 'tesseract.js';
 
 import Bill from './Bill';
+
+import { uuidv4 } from './utils';
+
+import { mockLines } from './constants';
 
 import './UploadBill.css';
 
@@ -52,7 +56,7 @@ const UploadImg = () => {
       }
       const name = nameWords.join(' ');
       const amount = line.words[amountIndex].text;
-      output.push({ name, amount })
+      output.push({ name, amount, id: uuidv4(), confirmed: true })
     });
 
     return output;
@@ -61,7 +65,7 @@ const UploadImg = () => {
   const readImgText = (imgToRead) => {
     updateIsReading(true);
 
-    Tesseract.recognize(imgToRead, 'nld')
+    Tesseract.recognize(imgToRead, 'eng+nld')
     .then(({ data: { lines } }) => {
       const output = outputItemsList(lines);
       updateIsReading(false);
@@ -89,7 +93,11 @@ const UploadImg = () => {
 
   const removeImg = () => {
     updateImg(null);
-  }
+  };
+
+  useEffect(() => {
+    updateOutput(outputItemsList(mockLines));
+  }, []);
 
   return (
     <div className="upload">

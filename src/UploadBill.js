@@ -81,8 +81,7 @@ const UploadImg = () => {
       }
 
       for (let j = 0; j < timesForNextLine; j++) {
-        output.push({ name, amount: amountForNextLine || amount, id: uuidv4(), confirmed: true });
-        console.log(output);
+        output.push({ name, amount: amountForNextLine || amount, id: uuidv4(), confirmed: true, isChecked: false });
       }
       timesForNextLine = 1;
       amountForNextLine = null
@@ -222,37 +221,3 @@ const UploadImg = () => {
 };
 
 export default UploadImg;
-
-// const outputItemsList = (lines) => {
-//   const output = [];
-
-//   let timesForNextLine = 1;
-//   for (let i = 0; i < lines.length; i++) {
-//     const line = lines[i];
-//     console.log(line);
-
-//     const amountIndex = getAmountIndex(line.words);
-//     if (amountIndex === -1) {
-//       continue; // we don't read lines without an amount
-//     }
-
-//     // if the line had times amount, remmeber times
-
-//     const nameWords = [ ...line.words.slice(0, amountIndex) ].map(({text}) => text);
-//     const name = nameWords.join(' ');
-//     if (hasTotal(name)) {
-//       break; // we don't read the receipt after total
-//     }
-
-//     // if it's line with times amount, remember times 
-//     // if (isAmountPerItemLine(name)) {
-//     //   timesForNextLine = parseInt(name, 10);
-//     //   continue;
-//     // } else {
-//     //   timesForNextLine = 1; 
-//     // }
-
-//     const amount = line.words[amountIndex].text;
-//     console.log(timesForNextLine, new Array(timesForNextLine));
-//     output.push({ name, amount, id: uuidv4(), confirmed: true });
-//   }

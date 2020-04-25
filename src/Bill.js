@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
+import Modal from './Modal';
+
 import { uuidv4 } from './utils';
 
 import './Bill.css';
 
 const Bill = ({ output }) =>  {
   const [items, updateItems] = useState(output);
+  const [checkedItems, updateCheckedtems] = useState([]);
   const [isEditing, updateIsEditing] = useState(true);
 
   const removeItem = (index) => {
@@ -22,8 +25,14 @@ const Bill = ({ output }) =>  {
     updateItems(copy);
   };
 
+  const updatIsChecked = (index) => {
+    const copy = [...items];
+    copy[index].isChecked = !copy[index].isChecked;
+    updateItems(copy);
+  };
+
   const addItem = () => {
-    updateItems([...items, {  name: '', amount: '', id: uuidv4(), confirmed: false }]);
+    updateItems([...items, {  name: '', amount: '', id: uuidv4(), confirmed: false, isChecked: false }]);
   };
 
   const confirmItem = (item, index) => {
@@ -37,22 +46,92 @@ const Bill = ({ output }) =>  {
 
   const confirmItems = () => {
     updateIsEditing(false);
-  }
-
-  const renderItemProp = (value, index, prop) => {
-    if (isEditing) {
-      return (
-        <input
-          type="text"
-          className={`bill__item__${prop}`}
-          value={value}
-          onChange={(e) => updateItemProp(e, index, prop)}
-        />
-      )
-    }
-
-    return <span className={`bill__item__${prop}`}>{value}</span>
   };
+
+  const openSendItemModal = () => {
+    updateCheckedtems(items.filter(item => item.isChecked));
+  };
+
+  const closeModal = () => {
+    updateCheckedtems([]);
+  };
+
+  const clearItems = () => {
+    updateItems(items.filter(item => !item.isChecked));
+    closeModal();
+  };
+
+  const renderItemField = (value, index, prop) => (
+    <input
+      type="text"
+      className={`bill__item__${prop}`}
+      value={value}
+      onChange={(e) => updateItemProp(e, index, prop)}
+    />
+  );
+
+  const renderEditableItem = (item, index) => (
+    <>
+      { renderItemField(item.name, index, 'name') }
+      <button
+        type="button"
+        className="bill__remove-btn"
+        onClick={() => removeItem(index)}>
+          x
+      </button>
+      {
+        !item.confirmed && (
+          <button
+            type="button"
+            className="bill__confirm-btn"
+            onClick={() => confirmItem(item, index)}>
+            ok
+          </button>
+        )
+      }
+      { renderItemField(item.amount, index, 'amount') }
+    </>
+  );
+
+  const renderConfirmedItem = (item, index) => (
+    <>
+      <input
+        type="checkbox"
+        className="bill__item__checkbox"
+        value={item.isChecked}
+        onChange={(e) => updatIsChecked(index)}
+      />
+      <span className={`bill__item__name`}>{item.name}</span>
+      <span className={`bill__item__amount`}>{item.amount}</span>
+    </>
+  );
+
+  const renderEditableButtons = () => (
+    <>
+      <button
+        type="button"
+        className="bill__add-btn"
+        onClick={addItem}>
+          Add item
+      </button>
+
+      <button
+        type="button"
+        className="bill__confirm-btn"
+        onClick={confirmItems}>
+          Confirm
+      </button>
+    </>
+  );
+
+  const renderConfirmedButtons = () => (
+    <button
+      type="button"
+      className="bill__send-btn"
+      onClick={openSendItemModal}>
+      Send to friend
+    </button>
+  );
 
   const renderItems = () => {
     if (!items.length) {
@@ -65,51 +144,22 @@ const Bill = ({ output }) =>  {
           {
             items.map((item, index) => (
               <li key={item.id} className="bill__item">
-                { renderItemProp(item.name, index, 'name') }
                 {
-                  isEditing && (
-                    <button
-                      type="button"
-                      className="bill__remove-btn"
-                      onClick={() => removeItem(index)}>
-                        x
-                    </button>
-                  )
+                  isEditing && renderEditableItem(item, index)
                 }
                 {
-                  isEditing && !item.confirmed && (
-                    <button
-                      type="button"
-                      className="bill__confirm-btn"
-                      onClick={() => confirmItem(item, index)}>
-                      ok
-                    </button>
-                  )
+                  !isEditing && renderConfirmedItem(item, index)
                 }
-                { renderItemProp(item.amount, index, 'amount') }
               </li>
             ))
           }
         </ul>
 
         {
-          isEditing && (
-            <>
-              <button
-                type="button"
-                className="bill__add-btn"
-                onClick={addItem}>
-                  Add item
-              </button>
-
-            <button
-              type="button"
-              className="bill__confirm-btn"
-              onClick={confirmItems}>
-                Confirm
-            </button>
-            </>
-          )
+          isEditing && renderEditableButtons()
+        }
+        {
+          !isEditing && renderConfirmedButtons()
         }
       </form>
     );
@@ -130,6 +180,16 @@ const Bill = ({ output }) =>  {
         isEditing && items.length && <h4>Edit if we got something wrong :)</h4>
       }
       { renderItems() }
+
+      {
+        !!checkedItems.length && (
+          <Modal
+            items={checkedItems}
+            closeModal={closeModal}
+            clearItems={clearItems}
+          />
+        )
+      }
     </section>
   )
 };

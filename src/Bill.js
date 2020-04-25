@@ -125,9 +125,9 @@ const Bill = ({ output }) =>  {
 
   return (
     <section className="bill">
-      <h2>You bill</h2>
+      <h2>Your bill</h2>
       {
-        isEditing && <h4>Edit if we got something wrong :)</h4>
+        isEditing && items.length && <h4>Edit if we got something wrong :)</h4>
       }
       { renderItems() }
     </section>

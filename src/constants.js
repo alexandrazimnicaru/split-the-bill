@@ -1,4 +1,4 @@
-export const mockLines = [{
+export const MOCK_LINES = [{
   words: [{
     text: "MESAS",
   }, {
@@ -40,4 +40,36 @@ export const mockLines = [{
   }, {
     text: "16,00",
   }],
+}, {
+  words: [{
+    text: "Total",
+  }, {
+    text: "20,00",
+  }],
 }];
+
+export const LINE_FORMATS = [
+  '1 x CIABATTA 1,49',
+  '1 x CIABATTA 1.49',
+  '1 X CIABATTA 1,49',
+  '1 X CIABATTA 1.49',
+  '1 CIABATTA 1,49',
+  '1 CIABATTA 1.49',
+  'CIABATTA 1,49',
+  'CIABATTA 1.49',
+];
+
+export const PRE_LINE_FORMATS = [
+  '1 x 1,49',
+  '1 x 1.49',
+  '1 X 1,49',
+  '1 X 1.49',
+];
+
+export const TOTAL_FORMATS = [
+  'TOTAL',
+  'TOTAAL',
+  'SUBTOTAL',
+  'SUBTOTAAL',
+  'TE BETALEN',
+];

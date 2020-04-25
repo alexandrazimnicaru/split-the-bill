@@ -1,11 +1,11 @@
-import React, { useState , useEffect} from 'react';
+import React, { useState , useEffect } from 'react';
 import Tesseract from 'tesseract.js';
 
 import Bill from './Bill';
 
 import { uuidv4 } from './utils';
 
-import { mockLines } from './constants';
+import { MOCK_LINES, TOTAL_FORMATS } from './constants';
 
 import './UploadBill.css';
 
@@ -16,6 +16,18 @@ const UploadImg = () => {
   const [isReading, updateIsReading] = useState(false);
   const [output, updateOutput] = useState(null);
   const reader = new FileReader();
+
+  const hasTotal = (words) => {
+    const uppercased =words.toUpperCase();
+    let hasTotalStr = false;
+    for (let i = 0; i < TOTAL_FORMATS.length; i++) {
+      if (uppercased.match(TOTAL_FORMATS[i])) {
+        hasTotalStr = true;
+        break;
+      }
+    }
+    return hasTotalStr;
+  };
 
   const matchesBillAmountFormat = (text) => (
     BILL_AMOUNT_FORMAT.test(text)
@@ -31,33 +43,26 @@ const UploadImg = () => {
     return index;
   };
 
-  const hasInfoBTWOrVAT = (words) => {
-    let hasInfo = false;
-    for (let i = 0; i < words.length; i++) {
-      if (words[i].match(/VAT/) || words[i].match(/BTW/)) {
-        hasInfo = true;
-        break;
-      }
-    }
-    return hasInfo;
-  };
-
   const outputItemsList = (lines) => {
     const output = [];
-    lines.forEach((line) => {
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       const amountIndex = getAmountIndex(line.words);
       if (amountIndex === -1) {
-        return;
+        continue; // we don't read lines without an amount
       }
       
       const nameWords = [ ...line.words.slice(0, amountIndex) ].map(({text}) => text);
-      if (hasInfoBTWOrVAT(nameWords)) {
-        return;
-      }
       const name = nameWords.join(' ');
+      console.log(name, hasTotal(name));
+      if (hasTotal(name)) {
+        break; // we don't read the receipt after total
+      }
+
       const amount = line.words[amountIndex].text;
       output.push({ name, amount, id: uuidv4(), confirmed: true })
-    });
+    }
 
     return output;
   };
@@ -65,12 +70,16 @@ const UploadImg = () => {
   const readImgText = (imgToRead) => {
     updateIsReading(true);
 
-    Tesseract.recognize(imgToRead, 'eng+nld')
-    .then(({ data: { lines } }) => {
-      const output = outputItemsList(lines);
-      updateIsReading(false);
-      updateOutput(output);
-    });
+    Tesseract.recognize(
+      imgToRead,
+      'eng+nld',
+      { logger: m => console.log(m) }
+    )
+      .then(({ data: { lines } }) => {
+        const output = outputItemsList(lines);
+        updateIsReading(false);
+        updateOutput(output);
+      });
   };
 
   const readImgForDisplay = (file) => {
@@ -96,7 +105,7 @@ const UploadImg = () => {
   };
 
   useEffect(() => {
-    updateOutput(outputItemsList(mockLines));
+    updateOutput(outputItemsList(MOCK_LINES));
   }, []);
 
   return (

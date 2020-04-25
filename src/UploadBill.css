@@ -4,20 +4,17 @@
   padding-bottom: 10px;
 }
 
-.upload__img {
+.upload__img-wrapper {
   position: relative;
   width: 400px;
+  height: 400px;
 }
 
-.upload__remove-btn {
-  position: absolute;
-  border-radius: 50%;
-  height: 25px;
-  width: 25px;
-  top: -10px;
-  right: -10px;
-  background: orangered;
-  color: white;
-  font-size: 17px;
-  cursor: pointer;
+.upload__img {
+  width: 100%;
+}
+
+.upload__section {
+  width: 50%;
+  float: left;
 }

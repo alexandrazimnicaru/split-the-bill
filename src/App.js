@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Header from './Header';
 import UploadBill from './UploadBill';
 
 import './App.css';
@@ -7,9 +8,7 @@ import './App.css';
 function App() {
   return (
     <article>
-      <header className="header">
-        Split the Bill
-      </header>
+      <Header />
 
       <main className="main">
         <UploadBill />

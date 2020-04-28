@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 import './Modal.css';
 
+const useStyles = makeStyles(() => ({
+  right: {
+   float: 'right',
+   paddingLeft: 10,
+  },
+  paddingTop: {
+    paddingTop: 10,
+  }
+}));
+
 const Modal = ({ items, closeModal, clearItems }) =>  {
   const [message, updateMessage] = useState('');
+  const classes = useStyles();
 
   const initializeMessage = () => {
     const sum = items
@@ -45,22 +59,23 @@ const Modal = ({ items, closeModal, clearItems }) =>  {
   return (
     <section className="modal">
       <div className="modal__inner">
-        <h2>Send your message to your friend</h2>
+        <Typography variant="h4" component="h2">
+          Send your message to your friend
+        </Typography>
 
-        <p>{ message }</p>
+        <Typography variant="subtitle1" component="h5" className={classes.paddingTop}>
+          { message }
+        </Typography>
 
-        <button
-          type="button"
-          className="modal__send-btn"
-          onClick={sendMessage}>
-          Send
-        </button>
-        <button
-          type="button"
-          className="modal__cancel-btn"
-          onClick={close}>
-          Cancel
-        </button>
+        <div className={classes.paddingTop}>
+          <Button variant="contained" color="secondary" onClick={sendMessage}>
+            Send
+          </Button>
+
+          <Button variant="contained" className={classes.right} onClick={close}>
+            Cancel
+          </Button>
+        </div>
       </div>
     </section>
   )

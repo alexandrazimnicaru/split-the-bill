@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Modal from './Modal';
 
@@ -6,10 +16,21 @@ import { uuidv4 } from './utils';
 
 import './Bill.css';
 
+const useStyles = makeStyles(() => ({
+  item: {
+   display: 'flex',
+   justifyContent: 'space-between',
+  },
+  add: {
+    paddingBottom: 10,
+  }
+}));
+
 const Bill = ({ output }) =>  {
   const [items, updateItems] = useState(output);
   const [checkedItems, updateCheckedtems] = useState([]);
   const [isEditing, updateIsEditing] = useState(true);
+  const classes = useStyles();
 
   const removeItem = (index) => {
     const copy = [...items];
@@ -32,16 +53,7 @@ const Bill = ({ output }) =>  {
   };
 
   const addItem = () => {
-    updateItems([...items, {  name: '', amount: '', id: uuidv4(), confirmed: false, isChecked: false }]);
-  };
-
-  const confirmItem = (item, index) => {
-    if (!item.name || !item.amount) {
-      return;
-    }
-    const copy = [...items];
-    copy.splice(index, 1, { ...item, confirmed: true });
-    updateItems(copy);
+    updateItems([...items, {  name: '', amount: '', id: uuidv4(), isChecked: false }]);
   };
 
   const confirmItems = () => {
@@ -62,9 +74,9 @@ const Bill = ({ output }) =>  {
   };
 
   const renderItemField = (value, index, prop) => (
-    <input
+    <TextField
       type="text"
-      className={`bill__item__${prop}`}
+      className={classes[prop]}
       value={value}
       onChange={(e) => updateItemProp(e, index, prop)}
     />
@@ -73,64 +85,51 @@ const Bill = ({ output }) =>  {
   const renderEditableItem = (item, index) => (
     <>
       { renderItemField(item.name, index, 'name') }
-      <button
-        type="button"
-        className="bill__remove-btn"
-        onClick={() => removeItem(index)}>
-          x
-      </button>
-      {
-        !item.confirmed && (
-          <button
-            type="button"
-            className="bill__confirm-btn"
-            onClick={() => confirmItem(item, index)}>
-            ok
-          </button>
-        )
-      }
       { renderItemField(item.amount, index, 'amount') }
+
+      <div>
+        <IconButton aria-label="delete" onClick={() => removeItem(index)}>
+          <DeleteIcon />
+        </IconButton>
+      </div>
     </>
   );
 
   const renderConfirmedItem = (item, index) => (
-    <>
-      <input
-        type="checkbox"
-        className="bill__item__checkbox"
-        value={item.isChecked}
-        onChange={(e) => updatIsChecked(index)}
+    <FormControlLabel
+        control={
+          <Checkbox
+            checked={item.isChecked}
+            onChange={(e) => updatIsChecked(index)}
+            name={item.name}
+            color="primary"
+          />
+        }
+        label={`${item.name} ${item.amount}`}
       />
-      <span className={`bill__item__name`}>{item.name}</span>
-      <span className={`bill__item__amount`}>{item.amount}</span>
-    </>
   );
 
   const renderEditableButtons = () => (
     <>
-      <button
-        type="button"
-        className="bill__add-btn"
-        onClick={addItem}>
-          Add item
-      </button>
+      <div className={classes.add}>
+        <Fab
+          aria-label="add"
+          size="small"
+          onClick={addItem}>
+          <AddIcon />
+        </Fab>
+      </div>
 
-      <button
-        type="button"
-        className="bill__confirm-btn"
-        onClick={confirmItems}>
-          Confirm
-      </button>
+      <Button variant="contained" color="secondary" onClick={confirmItems}>
+        Confirm
+      </Button>
     </>
   );
 
   const renderConfirmedButtons = () => (
-    <button
-      type="button"
-      className="bill__send-btn"
-      onClick={openSendItemModal}>
+    <Button variant="contained" color="secondary" onClick={openSendItemModal}>
       Send to friend
-    </button>
+    </Button>
   );
 
   const renderItems = () => {
@@ -143,7 +142,7 @@ const Bill = ({ output }) =>  {
         <ul className="bill__items">
           {
             items.map((item, index) => (
-              <li key={item.id} className="bill__item">
+              <li key={item.id} className={classes.item}>
                 {
                   isEditing && renderEditableItem(item, index)
                 }
@@ -175,20 +174,26 @@ const Bill = ({ output }) =>  {
 
   return (
     <section className="bill">
-      <h2>Your bill</h2>
+      <Typography variant="h6" component="h4">
+        Your bill
+      </Typography>
       {
-        isEditing && items.length && <h4>Edit if we got something wrong :)</h4>
+        isEditing && items.length && (
+          <Typography variant="subtitle1" component="h5">
+            Edit what we got wrong
+          </Typography>
+        )
       }
       { renderItems() }
 
       {
-        !!checkedItems.length && (
+        // !!checkedItems.length && (
           <Modal
             items={checkedItems}
             closeModal={closeModal}
             clearItems={clearItems}
           />
-        )
+        // )
       }
     </section>
   )

@@ -1,27 +1,33 @@
-import React, { useState , useEffect, useRef } from 'react';
+import React, { useState } from 'react';
+import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { createWorker, OEM } from 'tesseract.js';
 
 import Bill from './Bill';
+import Upload from './Upload';
+import Image from './Image';
 
 import { uuidv4 } from './utils';
 
 import { TOTAL_FORMATS } from './constants';
 
-import './UploadBill.css';
-
 const BILL_AMOUNT_FORMAT = /^\s*?\d+(\.|,\d{1,2})\s*$/;
 const PER_ITEM_AMOUNT_FORMAT = /^\s*(\d{1,3})+\s*x|X\s*$/;
 
-const Croppie = require('croppie');
-require('exif-js');
+const useStyles = makeStyles(() => ({
+  reading: {
+   textAlign: 'center',
+  },
+}));
 
 const UploadImg = () => {
   const [img, updateImg] = useState(null);
   const [isReading, updateIsReading] = useState(false);
   const [output, updateOutput] = useState(null);
-  const [croppie, updateCroppie] = useState(null);
   const reader = new FileReader();
-  const croppieEl = useRef(null);
+  const classes = useStyles();
 
   const isAmountPerItemLine = (text) => (
     PER_ITEM_AMOUNT_FORMAT.test(text)
@@ -113,12 +119,10 @@ const UploadImg = () => {
     })();
   };
 
-  const cropImage = () => {
-    croppie.result({ type: 'base64', size: 'original' }).then((base64) => {
-      updateImg(base64);
-      readImgText(base64);
-    });
-  }
+  const updateCroppedImg = (base64) => {
+    updateImg(base64);
+    readImgText(base64);
+  };
 
   const readImgForDisplay = (file) => {
     reader.onload = () => {
@@ -128,95 +132,43 @@ const UploadImg = () => {
     reader.readAsDataURL(file);
   };
 
-  const loadImg = (event) => {
-    if (!event.target.files || !event.target.files[0]) {
-      return;
-    }
-
-    const file = event.target.files[0];
-    readImgForDisplay(file);
-  };
-
   const removeImg = () => {
     updateImg(null);
   };
 
-  useEffect(() => {
-    if (!croppieEl.current || !img) {
-      return;
-    }
-
-    // once an image was cropped,
-    // show cropped image without croppie
-    if (croppie) {
-      croppie.destroy();
-      updateCroppie(null);
-    } else {
-      updateCroppie(new Croppie(croppieEl.current, {
-        enableExif: true,
-        enableResize: true,
-        viewport: { width: 150, height: 200 },
-        showZoomer: false,
-        enableOrientation: true,
-      }));
-    }
-  }, [croppieEl, img]);
-
   return (
-    <div className="upload">
-      <div className="upload__section">
+    <Grid container spacing={3}>
+      <Grid item xs={12} sm={6}>
         {
-          !img && (
-            <>
-              <label htmlFor="upload" className="upload__label">
-                Upload your bill
-              </label>
-              <input type="file" id="upload" onChange={loadImg} />
-            </>
-          )
+          !img && <Upload readImgForDisplay={readImgForDisplay} />
         }
         {
           img && (
-            <section>
-              <div>
-                <div className="upload__img-wrapper">
-                  <img className="upload__img" ref={croppieEl} src={img} alt="Upload" />
-                </div>
-
-                {
-                  croppie && (
-                    <button
-                      className="upload__crop-btn"
-                      onClick={cropImage}>
-                      Crop
-                    </button>
-                  )
-                }
-                
-                {
-                  !isReading && (
-                    <button
-                      className="upload__remove-btn"
-                      onClick={removeImg}>
-                        Remove
-                    </button>
-                  )
-                }
-              </div>
-            </section>
+            <Image
+              img={img}
+              isReading={isReading}
+              updateImg={updateCroppedImg}
+              removeImg={removeImg} />
           )
         }
-      </div>
+      </Grid>
 
-      <div className="upload__section">
+      <Grid item xs={12} sm={6}>
         {
-          isReading && <div>Please wait while we read your bill...</div>
+          isReading && (
+            <div className={classes.reading}>
+              <Typography variant="h6" component="h4">
+                Reading bill
+              </Typography>
+              <CircularProgress color="secondary" />
+            </div>
+          )
         }
         {
           !isReading && <Bill output={output} />
         }
-      </div>
-    </div>
+      </Grid>
+    </Grid>
   )
 };
 

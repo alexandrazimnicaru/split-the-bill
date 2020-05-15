@@ -15,10 +15,11 @@ const useStyles = makeStyles(() => ({
     width: 400,
     height: 400,
     maxWidth: '100%',
+    margin: '0 auto',
   },
   close: {
     top: -10,
-    left: 380,
+    right: -10,
     position: 'absolute',
     zIndex: 2,
   }

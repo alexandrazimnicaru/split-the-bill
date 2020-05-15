@@ -8,9 +8,10 @@ import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Modal from './Modal';
+import SendMessage from './SendMessage';
 
 import { uuidv4 } from './utils';
 
@@ -23,6 +24,9 @@ const useStyles = makeStyles(() => ({
   },
   add: {
     paddingBottom: 10,
+  },
+  modal: {
+    padding: 20,
   }
 }));
 
@@ -30,6 +34,7 @@ const Bill = ({ output }) =>  {
   const [items, updateItems] = useState(output);
   const [checkedItems, updateCheckedtems] = useState([]);
   const [isEditing, updateIsEditing] = useState(true);
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const classes = useStyles();
 
   const removeItem = (index) => {
@@ -60,12 +65,14 @@ const Bill = ({ output }) =>  {
     updateIsEditing(false);
   };
 
-  const openSendItemModal = () => {
+  const openModal = () => {
     updateCheckedtems(items.filter(item => item.isChecked));
+    setModalIsOpen(true);
   };
 
   const closeModal = () => {
     updateCheckedtems([]);
+    setModalIsOpen(false);
   };
 
   const clearItems = () => {
@@ -127,7 +134,7 @@ const Bill = ({ output }) =>  {
   );
 
   const renderConfirmedButtons = () => (
-    <Button variant="contained" color="secondary" onClick={openSendItemModal}>
+    <Button variant="contained" color="secondary" onClick={openModal}>
       Send to friend
     </Button>
   );
@@ -187,13 +194,21 @@ const Bill = ({ output }) =>  {
       { renderItems() }
 
       {
-        // !!checkedItems.length && (
+        !!checkedItems.length && (
           <Modal
-            items={checkedItems}
-            closeModal={closeModal}
-            clearItems={clearItems}
-          />
-        // )
+            open={modalIsOpen}
+            onClose={closeModal}
+            aria-labelledby="send-message-to-pay"
+            aria-describedby="send-message-to-pay"
+            className={classes.modal}
+          >
+            <SendMessage
+              items={checkedItems}
+              closeModal={closeModal}
+              clearItems={clearItems}
+            />
+          </Modal>
+        )
       }
     </section>
   )

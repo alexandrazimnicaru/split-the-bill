@@ -3,19 +3,25 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
-import './Modal.css';
-
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  container: {
+    margin: '50px auto',
+    padding: 20,
+    maxWidth: 500,
+    background: 'white',
+    boxShadow: theme.shadows[5],
+    borderRadius: 1,
+  },
   right: {
    float: 'right',
    paddingLeft: 10,
   },
   paddingTop: {
     paddingTop: 10,
-  }
+  },
 }));
 
-const Modal = ({ items, closeModal, clearItems }) =>  {
+const SendMessage = ({ items, closeModal, clearItems }) =>  {
   const [message, updateMessage] = useState('');
   const classes = useStyles();
 
@@ -57,10 +63,10 @@ const Modal = ({ items, closeModal, clearItems }) =>  {
   }
 
   return (
-    <section className="modal">
-      <div className="modal__inner">
+    <section className={classes.container}>
+      <div>
         <Typography variant="h4" component="h2">
-          Send your message to your friend
+          Send a message to your friend
         </Typography>
 
         <Typography variant="subtitle1" component="h5" className={classes.paddingTop}>
@@ -81,4 +87,4 @@ const Modal = ({ items, closeModal, clearItems }) =>  {
   )
 };
 
-export default Modal;
+export default SendMessage;

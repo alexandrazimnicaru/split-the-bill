@@ -16,7 +16,14 @@ import { TOTAL_FORMATS } from './constants';
 const BILL_AMOUNT_FORMAT = /^\s*?\d+(\.|,\d{1,2})\s*$/;
 const PER_ITEM_AMOUNT_FORMAT = /^\s*(\d{1,3})+\s*x|X\s*$/;
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  container: {
+    'flex-direction': 'column-reverse',
+
+    [theme.breakpoints.up('sm')]: {
+      'flex-direction': 'row',
+    },
+  },
   reading: {
    textAlign: 'center',
   },
@@ -137,7 +144,7 @@ const UploadImg = () => {
   };
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} className={classes.container}>
       <Grid item xs={12} sm={6}>
         {
           !img && <Upload readImgForDisplay={readImgForDisplay} />
